@@ -1,32 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:lottie/lottie.dart';
+import 'package:pokedex/src/core/entities/pokemon_entity.dart';
+import 'package:pokedex/src/core/presenters/functions/functions.dart';
 import 'package:pokedex/src/core/presenters/shared/tag.dart';
-import 'package:pokedex/src/core/presenters/theme/color_outlet.dart';
+import 'package:pokedex/src/core/repositories/objectbox_db.dart';
+import 'package:pokedex/src/modules/base/controllers/favorites_controller.dart';
+import 'package:pokedex/src/modules/base/models/pokemon.dart';
 
 import '../theme/font_family_outlet.dart';
 import '../theme/size_outlet.dart';
 import 'favorited_button.dart';
 
 class CardPokemon extends StatefulWidget {
-  final int id;
-  final String name;
-  final String image;
-  final List types;
-  final String color;
-  final ValueNotifier<bool> isFavorite;
-  final Function(bool) onFavorite;
-  final Function() onTap;
+  final Pokemon pokemon;
+  final Function()? onTap;
+  final ObjectBoxDB objectBoxDB;
+  final FavoritesController favoritesController;
   const CardPokemon({
     super.key,
-    required this.id,
-    required this.name,
-    required this.image,
-    required this.types,
-    required this.isFavorite,
-    required this.onFavorite,
-    required this.onTap,
-    required this.color,
+    required this.objectBoxDB,
+    this.onTap,
+    required this.pokemon,
+    required this.favoritesController,
   });
 
   @override
@@ -34,31 +30,14 @@ class CardPokemon extends StatefulWidget {
 }
 
 class _CardPokemonState extends State<CardPokemon> {
-  colorCard(String color) {
-    switch (color) {
-      case 'black':
-        return ColorOutlet.colorCardBlack;
-      case 'blue':
-        return ColorOutlet.colorCardBlue;
-      case 'brown':
-        return ColorOutlet.colorCardBrown;
-      case 'gray':
-        return ColorOutlet.colorCardGray;
-      case 'green':
-        return ColorOutlet.colorCardGreen;
-      case 'pink':
-        return ColorOutlet.colorCardPink;
-      case 'purple':
-        return ColorOutlet.colorCardPurple;
-      case 'red':
-        return ColorOutlet.colorCardRed;
-      case 'white':
-        return ColorOutlet.colorCardWhite;
-      case 'yellow':
-        return ColorOutlet.colorCardYellow;
-      default:
-        return ColorOutlet.colorCardBlack;
-    }
+  ValueNotifier<bool> isFavorite = ValueNotifier<bool>(false);
+
+  @override
+  void initState() {
+    super.initState();
+    widget.objectBoxDB.checkFavoritePokemon(widget.pokemon.name).then((value) {
+      isFavorite.value = value;
+    });
   }
 
   @override
@@ -68,17 +47,15 @@ class _CardPokemonState extends State<CardPokemon> {
       child: Container(
         // gradient: LinearGradient(
         decoration: BoxDecoration(
-          color: colorCard(widget.color),
+          color: Functions.colorCard(widget.pokemon.color),
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              colorCard(widget.color),
-              colorCard(widget.color),
-              colorCard(widget.color).withOpacity(0.8),
-              colorCard(widget.color).withOpacity(0.7),
-              colorCard(widget.color).withOpacity(0.6),
-              colorCard(widget.color),
+              Functions.colorCard(widget.pokemon.color),
+              Functions.colorCard(widget.pokemon.color),
+              Functions.colorCard(widget.pokemon.color).withOpacity(0.8),
+              Functions.colorCard(widget.pokemon.color).withOpacity(0.8),
             ],
           ),
           borderRadius: const BorderRadius.all(Radius.circular(SizeOutlet.borderRadiusSizeNormal)),
@@ -87,7 +64,7 @@ class _CardPokemonState extends State<CardPokemon> {
         width: MediaQuery.of(context).size.width,
         height: 150,
         child: InkWell(
-          onTap: () {},
+          onTap: widget.onTap,
           borderRadius: BorderRadius.circular(
             SizeOutlet.borderRadiusSizeNormal,
           ),
@@ -99,8 +76,19 @@ class _CardPokemonState extends State<CardPokemon> {
                 left: MediaQuery.of(context).size.width * 0.8,
                 bottom: MediaQuery.of(context).size.height * 0.13,
                 child: FavoritedButton(
-                  isFavorited: widget.isFavorite,
+                  isFavorited: isFavorite,
                   size: SizeOutlet.iconSizeDefault,
+                  onTap: () async {
+                    await widget.objectBoxDB.favoritePokemon(
+                      PokemonEntity(
+                        name: widget.pokemon.name,
+                        color: widget.pokemon.color,
+                      ),
+                      context,
+                    );
+                    isFavorite.value = !isFavorite.value;
+                    widget.favoritesController.loadList();
+                  },
                 ),
               ),
               Padding(
@@ -112,7 +100,7 @@ class _CardPokemonState extends State<CardPokemon> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          '#${widget.id.toString().padLeft(3, '0')}',
+                          '#${widget.pokemon.id.toString().padLeft(3, '0')}',
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: SizeOutlet.textSizeMicro2,
@@ -120,7 +108,7 @@ class _CardPokemonState extends State<CardPokemon> {
                           ),
                         ),
                         Text(
-                          widget.name[0].toUpperCase() + widget.name.substring(1),
+                          widget.pokemon.name[0].toUpperCase() + widget.pokemon.name.substring(1),
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: SizeOutlet.textSizeSmall2,
@@ -129,7 +117,7 @@ class _CardPokemonState extends State<CardPokemon> {
                         ),
                         Row(
                           children: [
-                            for (var type in widget.types) Tag(text: type['type']['name']),
+                            for (var type in widget.pokemon.types) Tag(text: type['type']['name']),
                           ],
                         )
                       ],
@@ -144,13 +132,17 @@ class _CardPokemonState extends State<CardPokemon> {
                           maxHeight: SizeOutlet.imageSizeExtraLarge,
                           maxWidth: SizeOutlet.imageSizeExtraLarge,
                         ),
-                        child: SvgPicture.network(
-                          widget.image,
-                          placeholderBuilder: (context) => Center(
-                            child: Lottie.asset(
-                              'assets/lottie/pokeball_loading.json',
-                              width: SizeOutlet.imageSizeLarge,
-                              height: SizeOutlet.imageSizeLarge,
+                        child: Hero(
+                          transitionOnUserGestures: true,
+                          tag: widget.pokemon.name,
+                          child: SvgPicture.network(
+                            widget.pokemon.sprite,
+                            placeholderBuilder: (context) => Center(
+                              child: Lottie.asset(
+                                'assets/lottie/pokeball_loading.json',
+                                width: SizeOutlet.imageSizeLarge,
+                                height: SizeOutlet.imageSizeLarge,
+                              ),
                             ),
                           ),
                         ),
