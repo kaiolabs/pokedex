@@ -2,16 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:pokedex/src/core/presenters/shared/icone_bottom_nav.dart';
 import 'package:pokedex/src/core/presenters/theme/color_outlet.dart';
 import 'package:pokedex/src/core/presenters/theme/size_outlet.dart';
+import 'package:pokedex/src/modules/base/controllers/favorites_controller.dart';
 
 class ScaffoldBase extends StatefulWidget {
   final ValueNotifier<int> basePageIndex;
   final PageController pageController;
+  final FavoritesController favoritesController;
   final Widget body;
   const ScaffoldBase({
     super.key,
     required this.body,
     required this.basePageIndex,
     required this.pageController,
+    required this.favoritesController,
   });
 
   @override
@@ -71,6 +74,7 @@ class _ScaffoldBaseState extends State<ScaffoldBase> {
                         onPressed: () {
                           widget.pageController.animateToPage(2, duration: const Duration(milliseconds: 500), curve: Curves.ease);
                           widget.basePageIndex.value = 2;
+                          widget.favoritesController.loadList();
                         },
                       ),
                     ]),
