@@ -8,6 +8,7 @@ abstract class SizeOutlet {
 
   // Border Radius
   static const double borderRadiusSizeBig = 50;
+  static const double borderRadiusizeHuge = 30;
   static const double borderRadiusSizePattern = 25;
   static const double borderRadiusSizeMedium = 15;
   static const double borderRadiusSizeNormal = 10;
