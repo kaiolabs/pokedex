@@ -5,8 +5,9 @@ import 'package:pokedex/src/core/presenters/theme/color_outlet.dart';
 
 class FavoritedButton extends StatefulWidget {
   ValueNotifier<bool> isFavorited;
+  Function()? onTap;
   final double size;
-  FavoritedButton({super.key, required this.isFavorited, required this.size});
+  FavoritedButton({super.key, required this.isFavorited, required this.size, this.onTap});
 
   @override
   State<FavoritedButton> createState() => _FavoritedButtonState();
@@ -25,7 +26,7 @@ class _FavoritedButtonState extends State<FavoritedButton> {
           size: widget.size,
         ),
         onTap: () {
-          widget.isFavorited.value = !widget.isFavorited.value;
+          widget.onTap?.call();
         },
       ),
     );
