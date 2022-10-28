@@ -6,12 +6,9 @@ enum ApiEndpoint {
   pokemonHabitat, // https://pokeapi.co/api/v2/pokemon-habitat/
   pokemonShape, // https://pokeapi.co/api/v2/pokemon-shape/
   pokemonType, // https://pokeapi.co/api/v2/type/
-  pokemonAbility, // https://pokeapi.co/api/v2/ability/
   pokemonEggGroup, // https://pokeapi.co/api/v2/egg-group/
   pokemonGrowthRate, // https://pokeapi.co/api/v2/growth-rate/
   pokemonNature, // https://pokeapi.co/api/v2/nature/
-  pokemonStat, // https://pokeapi.co/api/v2/stat/
-  pokemonMove, // https://pokeapi.co/api/v2/move/
   pokemonMoveAilment, // https://pokeapi.co/api/v2/move-ailment/
   pokemonMoveBattleStyle, // https://pokeapi.co/api/v2/move-battle-style/
   pokemonMoveCategory, // https://pokeapi.co/api/v2/move-category/
@@ -32,6 +29,7 @@ enum ApiEndpoint {
   pokemonItemPocket, // https://pokeapi.co/api/v2/item-pocket/
   pokemonMachine, // https://pokeapi.co/api/v2/machine/
   pokemonEncounterMethod, // https://pokeapi.co/api/v2/encounter-method/
+  ability, // https://pokeapi.co/api/v2/ability/
 }
 
 extension ApiEndpointExtension on ApiEndpoint {
@@ -51,18 +49,12 @@ extension ApiEndpointExtension on ApiEndpoint {
         return 'pokemon-shape';
       case ApiEndpoint.pokemonType:
         return 'type';
-      case ApiEndpoint.pokemonAbility:
-        return 'ability';
       case ApiEndpoint.pokemonEggGroup:
         return 'egg-group';
       case ApiEndpoint.pokemonGrowthRate:
         return 'growth-rate';
       case ApiEndpoint.pokemonNature:
         return 'nature';
-      case ApiEndpoint.pokemonStat:
-        return 'stat';
-      case ApiEndpoint.pokemonMove:
-        return 'move';
       case ApiEndpoint.pokemonMoveAilment:
         return 'move-ailment';
       case ApiEndpoint.pokemonMoveBattleStyle:
@@ -103,6 +95,8 @@ extension ApiEndpointExtension on ApiEndpoint {
         return 'machine';
       case ApiEndpoint.pokemonEncounterMethod:
         return 'encounter-method';
+      case ApiEndpoint.ability:
+        return 'ability';
     }
   }
 }
