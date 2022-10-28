@@ -17,6 +17,7 @@ class _FavoritesViewState extends State<BaseView> {
     return ScaffoldBase(
       pageController: widget.controller.pageController,
       basePageIndex: widget.controller.basePageIndex,
+      favoritesController: widget.controller.favoritesController,
       body: PageView(
         physics: const NeverScrollableScrollPhysics(),
         controller: widget.controller.pageController,
