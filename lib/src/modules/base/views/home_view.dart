@@ -3,14 +3,27 @@ import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:pokedex/src/core/presenters/shared/card_pokemon.dart';
 import 'package:pokedex/src/core/presenters/theme/size_outlet.dart';
+import 'package:pokedex/src/core/repositories/objectbox_db.dart';
+import 'package:pokedex/src/modules/base/controllers/favorites_controller.dart';
 import 'package:pokedex/src/modules/base/controllers/home_controller.dart';
+import 'package:pokedex/src/modules/base/controllers/pokedex_controller.dart';
 import 'package:pokedex/src/modules/base/views/header_home.dart';
 
 class HomeView extends StatefulWidget {
   final HomeController controller;
+  final PageController pageController;
+  final FavoritesController favoritesController;
+  final PokedexController pokedexController;
+  final ValueNotifier<int> basePageIndex;
+  final ObjectBoxDB objectBoxDB;
   const HomeView({
     Key? key,
     required this.controller,
+    required this.pageController,
+    required this.basePageIndex,
+    required this.pokedexController,
+    required this.objectBoxDB,
+    required this.favoritesController,
   }) : super(key: key);
 
   @override
@@ -22,8 +35,9 @@ class _HomeViewState extends State<HomeView> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        HeaderHome(
+        Header(
           controllerSearch: widget.controller.controllerSearch,
+          title: 'Pokédex',
           onChanged: (value) {
             widget.controller.searchPokemon();
           },
@@ -41,14 +55,14 @@ class _HomeViewState extends State<HomeView> {
                         itemCount: widget.controller.quantidadeDePokemons.value,
                         itemBuilder: (context, index) {
                           return CardPokemon(
-                            id: widget.controller.listaPokemon.value[index].id,
-                            name: widget.controller.listaPokemon.value[index].name,
-                            image: widget.controller.listaPokemon.value[index].sprite,
-                            types: widget.controller.listaPokemon.value[index].types,
-                            color: widget.controller.listaPokemon.value[index].color,
-                            isFavorite: ValueNotifier<bool>(false),
-                            onFavorite: (value) {},
-                            onTap: () {},
+                            objectBoxDB: widget.objectBoxDB,
+                            pokemon: widget.controller.listaPokemon.value[index],
+                            onTap: () {
+                              widget.pageController.animateToPage(1, duration: const Duration(milliseconds: 500), curve: Curves.ease);
+                              widget.basePageIndex.value = 1;
+                              widget.pokedexController.pokemon = widget.controller.listaPokemon.value[index];
+                            },
+                            favoritesController: widget.favoritesController,
                           );
                         },
                       ),
