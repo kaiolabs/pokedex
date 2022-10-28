@@ -4,13 +4,15 @@ import 'package:pokedex/src/core/presenters/theme/color_outlet.dart';
 import 'package:pokedex/src/core/presenters/theme/font_family_outlet.dart';
 import 'package:pokedex/src/core/presenters/theme/size_outlet.dart';
 
-class HeaderHome extends StatelessWidget {
+class Header extends StatelessWidget {
   final TextEditingController controllerSearch;
   final Function(String) onChanged;
-  const HeaderHome({
+  final String title;
+  const Header({
     super.key,
     required this.controllerSearch,
     required this.onChanged,
+    required this.title,
   });
 
   @override
@@ -33,9 +35,9 @@ class HeaderHome extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const Text(
-                  'Pokédex',
-                  style: TextStyle(
+                Text(
+                  title,
+                  style: const TextStyle(
                     color: ColorOutlet.colorWhite,
                     fontSize: SizeOutlet.textSizeDefault,
                     fontFamily: FontFamilyOutlet.defaultFontFamilyMedium,
