@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:pokedex/src/core/infra/api.dart';
 import 'package:pokedex/src/core/infra/api_endpoints.dart';
 import 'package:pokedex/src/core/services/dio_services.dart';
@@ -15,30 +15,34 @@ class HomeController extends ChangeNotifier {
   ValueNotifier<bool> isLoadList = ValueNotifier<bool>(false);
   List listaPokemonAux = [];
 
-  int totalRequest = 50;
+  int totalRequest = 150;
 
   loadListaPokemon() async {
     for (var i = 1; i < totalRequest; i++) {
       await DioServices.get('${Api.apiUrl}${ApiEndpoint.pokemon.name}/$i').then((value) async {
         await DioServices.get('${Api.apiUrl}${ApiEndpoint.pokemonSpecies.name}/${value.data['name']}').then((colorValue) {
-          listaPokemon.value.add(Pokemon(
-              id: value.data['id'],
-              name: value.data['name'],
-              sprite: value.data['sprites']['other']['dream_world']['front_default'],
-              stats: value.data['stats'],
-              types: value.data['types'],
-              color: colorValue.data['color']['name']));
-          listaPokemonAux.add(Pokemon(
-              id: value.data['id'],
-              name: value.data['name'],
-              sprite: value.data['sprites']['other']['dream_world']['front_default'],
-              stats: value.data['stats'],
-              types: value.data['types'],
-              color: colorValue.data['color']['name']));
-          quantidadeDePokemons.value = listaPokemon.value.length;
+          if (colorValue.statusCode == 200) {
+            listaPokemon.value.add(Pokemon(
+                id: value.data['id'],
+                name: value.data['name'],
+                sprite: value.data['sprites']['other']['dream_world']['front_default'],
+                stats: value.data['stats'],
+                types: value.data['types'],
+                color: colorValue.data['color']['name']));
+            listaPokemonAux.add(Pokemon(
+                id: value.data['id'],
+                name: value.data['name'],
+                sprite: value.data['sprites']['other']['dream_world']['front_default'],
+                stats: value.data['stats'],
+                types: value.data['types'],
+                color: colorValue.data['color']['name']));
+            quantidadeDePokemons.value = listaPokemon.value.length;
+          } else {
+            print('Erro ao carregar a cor do pokemon');
+          }
         });
       });
-      if (i == 25) {
+      if (i == 20) {
         isLoadList.value = true;
       }
     }
